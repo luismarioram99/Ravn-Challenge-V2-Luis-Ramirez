@@ -15,6 +15,4 @@ const ormconfig: TypeOrmModuleOptions = {
   synchronize: process.env.DB_SYNC === 'true', // Solo para desarrollo
 };
 
-console.info(ormconfig);
-
 export default ormconfig;
