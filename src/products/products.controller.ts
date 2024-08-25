@@ -21,6 +21,12 @@ import { UpdateProductDto } from './dtos/updateProduct.dto';
 export class ProductsController {
   constructor(private productService: ProductsService) {}
 
+  /**
+   * Retrieves a product by its id.
+   *
+   * @param {string} id - The id of the product (uuid)
+   * @return {Product} The found product
+   */
   @ApiParam({
     name: 'id',
     type: String,
@@ -44,6 +50,12 @@ export class ProductsController {
     }
   }
 
+  /**
+   * Creates a new product.
+   *
+   * @param {CreateProductDto} createProductDto - The data transfer object containing the product details.
+   * @return {Promise} A promise that resolves to the newly created product.
+   */
   @ApiBody({
     type: CreateProductDto,
   })
@@ -56,6 +68,13 @@ export class ProductsController {
     }
   }
 
+  /**
+   * Updates a product with the given id.
+   *
+   * @param {string} id - The id of the product to update (uuid).
+   * @param {UpdateProductDto} updateProductDto - The data transfer object containing the updated product details.
+   * @return {Promise} A promise that resolves to the updated product.
+   */
   @ApiParam({
     name: 'id',
     type: String,
@@ -80,6 +99,12 @@ export class ProductsController {
     }
   }
 
+  /**
+   * Deletes a product with the given id.
+   *
+   * @param {string} id - The id of the product to delete (uuid)
+   * @return {Promise} A promise that resolves to a success message if the product is deleted successfully
+   */
   @ApiParam({
     name: 'id',
     type: String,
