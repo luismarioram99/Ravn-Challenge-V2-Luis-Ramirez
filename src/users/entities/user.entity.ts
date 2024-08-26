@@ -23,7 +23,7 @@ export class User {
   @ApiResponseProperty({ type: 'string' })
   username: string;
 
-  @Column({ default: Role.ADMIN, enum: Role })
+  @Column({ default: Role.USER, enum: Role })
   role: Role;
 
   @Column({ select: false })

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
 
 import { User } from '../entities/user.entity';
 import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dtos/createUser.dto';
+import { Role } from 'src/commons/enums/roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,11 @@ export class UsersService {
    * @param {CreateUserDto} createUserDto - The data transfer object containing the user's information.
    * @return {Promise<User>} The newly created user without the password field.
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto, reqUser: any): Promise<User> {
+    if (createUserDto.role === Role.ADMIN && reqUser.role !== Role.ADMIN) {
+      throw new ForbiddenException('Only admins can create admins');
+    }
+
     const { password } = createUserDto;
 
     const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
@@ -27,6 +32,7 @@ export class UsersService {
 
     const user = this.userRepository.create({
       ...createUserDto,
+      role: createUserDto.role || Role.USER,
       password: hashedPassword,
     });
 
