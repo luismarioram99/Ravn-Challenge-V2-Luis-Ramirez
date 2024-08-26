@@ -10,7 +10,9 @@ import ormconfig from 'ormconfig';
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormconfig),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ProductsModule,
     UsersModule,
     AuthModule,
