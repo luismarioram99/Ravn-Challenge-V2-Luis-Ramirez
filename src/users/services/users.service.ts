@@ -43,11 +43,12 @@ export class UsersService {
    * @param {string} identifier - The email or username of the user to find.
    * @return {Promise<User>} The user entity if found, or undefined if not found.
    */
-  async findUser(identifier: string): Promise<User> {
+  async findUser(identifier: string): Promise<User | null> {
     //identifier is either email or username
 
     return this.userRepository.findOne({
       where: [{ email: identifier }, { username: identifier }],
+      select: ['id', 'email', 'username', 'password'],
     });
   }
 }
