@@ -7,6 +7,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Role } from '../../commons/enums/roles.enum';
 
 @Entity()
 export class User {
@@ -21,6 +22,9 @@ export class User {
   @Column({ unique: true })
   @ApiResponseProperty({ type: 'string' })
   username: string;
+
+  @Column({ default: Role.ADMIN, enum: Role })
+  role: Role;
 
   @Column({ select: false })
   password: string;

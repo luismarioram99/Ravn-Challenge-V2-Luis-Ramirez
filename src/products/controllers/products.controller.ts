@@ -13,8 +13,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ProductsService } from '../services/products.service';
-import { EntityNotFoundError } from 'typeorm';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -24,12 +23,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Product } from '../entities/product.entity';
-import { CreateProductDto } from '../dtos/createProduct.dto';
-import { UpdateProductDto } from '../dtos/updateProduct.dto';
-import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { EntityNotFoundError } from 'typeorm';
 import { Public } from '../../commons/decorators/isPublic.decorator';
+import { Roles } from '../../commons/decorators/roles.decorator';
+import { Role } from '../../commons/enums/roles.enum';
+import { CreateProductDto } from '../dtos/createProduct.dto';
+import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
+import { UpdateProductDto } from '../dtos/updateProduct.dto';
+import { Product } from '../entities/product.entity';
+import { ProductsService } from '../services/products.service';
 
 @ApiTags('products')
 @ApiBearerAuth()
@@ -116,6 +118,7 @@ export class ProductsController {
     type: CreateProductDto,
   })
   @Post()
+  @Roles(Role.ADMIN)
   async createProduct(@Body() createProductDto: CreateProductDto) {
     try {
       return await this.productService.createProduct(createProductDto);
@@ -140,6 +143,7 @@ export class ProductsController {
     type: UpdateProductDto,
   })
   @Patch(':id')
+  @Roles(Role.ADMIN)
   async updateProduct(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -167,6 +171,7 @@ export class ProductsController {
     description: 'The id of the product (uiid)',
   })
   @Delete(':id')
+  @Roles(Role.ADMIN)
   async deleteProduct(@Param('id') id: string) {
     try {
       await this.productService.deleteProduct(id);
@@ -206,6 +211,7 @@ export class ProductsController {
   })
   @ApiResponse({ status: 200, description: 'Image successfully processed' })
   @ApiResponse({ status: 400, description: 'Invalid file format' })
+  @Roles(Role.ADMIN)
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id,
@@ -232,8 +238,6 @@ export class ProductsController {
   @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })
   async likeProduct(@Param('id') id: string, @Request() req: any) {
     const userId = req.user?.userId;
-
-    console.info(userId);
 
     try {
       return await this.productService.likeProduct(id, userId);
