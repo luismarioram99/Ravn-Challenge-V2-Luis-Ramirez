@@ -8,6 +8,7 @@ import { UpdateProductDto } from '../dtos/updateProduct.dto';
 import { Product } from '../entities/product.entity';
 import { ProductRepository } from '../repositories/product.repository';
 import { ImageService } from 'src/images/services/images.service';
+import { UsersService } from 'src/users/services/users.service';
 
 /**
  * Constructs a new instance of the ProductsService class.
@@ -20,6 +21,7 @@ export class ProductsService {
     @InjectRepository(Product)
     private productRepository: ProductRepository,
     private imagesService: ImageService,
+    private usersService: UsersService,
   ) {}
 
   /**
@@ -51,10 +53,11 @@ export class ProductsService {
    * @param {string} id - the unique identifier of the product to retrieve
    * @return {Promise<Product>} the product with the specified identifier
    */
-  async findOne(id: string) {
+  async findOne(id: string, options: any = {}) {
     return this.productRepository.findOneOrFail({
       where: { id },
-      relations: ['images'],
+      ...options,
+      relations: [...(options.relations || []), 'images'],
     });
   }
 
@@ -107,6 +110,24 @@ export class ProductsService {
     }
 
     return;
+  }
+
+  /**
+   * Likes a product by adding a user to its likers list.
+   *
+   * @param {string} productId - The ID of the product to like.
+   * @param {string} userId - The ID of the user liking the product.
+   * @return {Promise<void>} No return value, throws an error if the product or user does not exist.
+   */
+  async likeProduct(productId: string, userId: string) {
+    const [product, user] = await Promise.all([
+      this.findOne(productId, { relations: ['likers'] }),
+      this.usersService.findUserById(userId),
+    ]);
+
+    product.likers = [...(product.likers || []), user];
+
+    return this.productRepository.save(product);
   }
 
   /**

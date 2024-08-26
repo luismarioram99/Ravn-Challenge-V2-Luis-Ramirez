@@ -20,6 +20,7 @@ async function bootstrap() {
     .setTitle('Awesome Store')
     .setDescription('Dice, books, hobbies and more!')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -3,6 +3,7 @@ import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto, LoginResponseDto } from '../dtos/login.dto';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { AuthService } from '../services/auth.service';
+import { Public } from 'src/commons/decorators/isPublic.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -15,6 +16,7 @@ export class AuthController {
    * @param {Request} req - The request object.
    * @return {Promise<any>} A Promise that resolves to the access token.
    */
+  @Public()
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginDto })
   @ApiResponse({ status: 200, type: LoginResponseDto })

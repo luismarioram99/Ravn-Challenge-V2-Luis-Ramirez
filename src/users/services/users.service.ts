@@ -51,4 +51,16 @@ export class UsersService {
       select: ['id', 'email', 'username', 'password'],
     });
   }
+
+  /**
+   * Retrieves a user from the database by their unique identifier.
+   *
+   * @param {string} id - The unique identifier of the user to find.
+   * @return {Promise<User>} The user entity if found.
+   */
+  async findUserById(id: string): Promise<User> {
+    return this.userRepository.findOneOrFail({
+      where: { id },
+    });
+  }
 }

@@ -9,15 +9,16 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { EntityNotFoundError } from 'typeorm';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -28,8 +29,10 @@ import { CreateProductDto } from '../dtos/createProduct.dto';
 import { UpdateProductDto } from '../dtos/updateProduct.dto';
 import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Public } from '../../commons/decorators/isPublic.decorator';
 
 @ApiTags('products')
+@ApiBearerAuth()
 @Controller('products')
 export class ProductsController {
   constructor(private productService: ProductsService) {}
@@ -40,6 +43,7 @@ export class ProductsController {
    * @param {ProductQueryPaginationDto} query - The query parameters for pagination and filtering.
    * @return {Promise<Product[]>} The list of products matching the query parameters.
    */
+  @Public()
   @ApiQuery({
     name: 'limit',
     type: Number,
@@ -78,6 +82,7 @@ export class ProductsController {
    * @param {string} id - The id of the product (uuid)
    * @return {Product} The found product
    */
+  @Public()
   @ApiParam({
     name: 'id',
     type: String,
@@ -185,7 +190,6 @@ export class ProductsController {
   @ApiTags('images')
   @Post(':id/img')
   @UseInterceptors(FileInterceptor('image'))
-  @ApiOperation({ summary: 'Upload an image and process it' })
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })
   @ApiBody({
@@ -208,6 +212,31 @@ export class ProductsController {
   ) {
     try {
       return await this.productService.uploadImage(file, id);
+    } catch (err) {
+      if (err instanceof EntityNotFoundError) {
+        throw new NotFoundException(`Product with id ${id} not found`);
+      } else {
+        throw new InternalServerErrorException(err.message);
+      }
+    }
+  }
+
+  /**
+   * Likes a product by adding a user to its likers list.
+   *
+   * @param {string} id - The ID of the product to like.
+   * @param {any} req - The request object containing the user information.
+   * @return {Promise<void>} No return value, throws an error if the product or user does not exist.
+   */
+  @Post(':id/like')
+  @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })
+  async likeProduct(@Param('id') id: string, @Request() req: any) {
+    const userId = req.user?.userId;
+
+    console.info(userId);
+
+    try {
+      return await this.productService.likeProduct(id, userId);
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
         throw new NotFoundException(`Product with id ${id} not found`);

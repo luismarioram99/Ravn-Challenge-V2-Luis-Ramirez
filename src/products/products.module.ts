@@ -6,9 +6,10 @@ import { Product } from './entities/product.entity';
 import { ProductRepository } from './repositories/product.repository';
 import { ProductsService } from './services/products.service';
 import { ImagesModule } from 'src/images/images.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product]), ImagesModule],
+  imports: [TypeOrmModule.forFeature([Product]), ImagesModule, UsersModule],
   controllers: [ProductsController],
   providers: [ProductsService, ProductRepository],
 })
