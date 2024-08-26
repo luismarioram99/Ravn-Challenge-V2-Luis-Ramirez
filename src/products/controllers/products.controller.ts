@@ -9,11 +9,15 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { EntityNotFoundError } from 'typeorm';
 import {
   ApiBody,
+  ApiConsumes,
+  ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -23,6 +27,7 @@ import { Product } from '../entities/product.entity';
 import { CreateProductDto } from '../dtos/createProduct.dto';
 import { UpdateProductDto } from '../dtos/updateProduct.dto';
 import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('products')
 @Controller('products')
@@ -161,6 +166,48 @@ export class ProductsController {
     try {
       await this.productService.deleteProduct(id);
       return { message: 'Product deleted successfully' };
+    } catch (err) {
+      if (err instanceof EntityNotFoundError) {
+        throw new NotFoundException(`Product with id ${id} not found`);
+      } else {
+        throw new InternalServerErrorException(err.message);
+      }
+    }
+  }
+
+  /**
+   * Uploads an image for a product with the given id.
+   *
+   * @param {Express.Multer.File} file - The image file to be uploaded
+   * @param {string} id - The id of the product to which the image belongs
+   * @return {Promise} A promise that resolves to the result of the image upload
+   */
+  @ApiTags('images')
+  @Post(':id/img')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiOperation({ summary: 'Upload an image and process it' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })
+  @ApiBody({
+    description: 'Image file',
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Image successfully processed' })
+  @ApiResponse({ status: 400, description: 'Invalid file format' })
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id,
+  ) {
+    try {
+      return await this.productService.uploadImage(file, id);
     } catch (err) {
       if (err instanceof EntityNotFoundError) {
         throw new NotFoundException(`Product with id ${id} not found`);

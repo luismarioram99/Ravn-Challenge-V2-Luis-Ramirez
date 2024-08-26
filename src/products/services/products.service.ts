@@ -7,6 +7,7 @@ import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
 import { UpdateProductDto } from '../dtos/updateProduct.dto';
 import { Product } from '../entities/product.entity';
 import { ProductRepository } from '../repositories/product.repository';
+import { ImageService } from 'src/images/services/images.service';
 
 /**
  * Constructs a new instance of the ProductsService class.
@@ -18,6 +19,7 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private productRepository: ProductRepository,
+    private imagesService: ImageService,
   ) {}
 
   /**
@@ -100,5 +102,21 @@ export class ProductsService {
     }
 
     return;
+  }
+
+  /**
+   * Uploads an image file for a product with the specified ID.
+   *
+   * @param {Express.Multer.File} file - The image file to be uploaded.
+   * @param {string} id - The ID of the product.
+   * @return {Promise<Image>} A promise that resolves to the created image object.
+   * @throws {EntityNotFoundError} If the product with the specified ID does not exist.
+   */
+  async uploadImage(file: Express.Multer.File, id: string) {
+    const product = await this.findOne(id);
+
+    const { url } = await this.imagesService.uploadImage(file);
+
+    return this.imagesService.create(url, product);
   }
 }

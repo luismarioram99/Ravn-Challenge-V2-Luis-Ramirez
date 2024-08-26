@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ImagesModule } from './images/images.module';
 import ormconfig from 'ormconfig';
 
 @Module({
@@ -16,6 +17,7 @@ import ormconfig from 'ormconfig';
     ProductsModule,
     UsersModule,
     AuthModule,
+    ImagesModule,
   ],
   controllers: [],
   providers: [],

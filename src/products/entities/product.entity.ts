@@ -1,6 +1,13 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '../../users/entities/user.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Image } from '../../images/entities/image.entity';
 
 @Entity()
 export class Product {
@@ -31,6 +38,9 @@ export class Product {
   @Column({ nullable: true })
   @ApiResponseProperty({ type: 'number', example: 'www.example.com' })
   image: string;
+
+  @OneToMany(() => Image, (image) => image.product)
+  images: Image[];
 
   @ManyToMany(() => User, (user) => user.likedProducts)
   likers: User[];
