@@ -10,7 +10,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ProductsService } from './services/products.service';
+import { ProductsService } from '../services/products.service';
 import { EntityNotFoundError } from 'typeorm';
 import {
   ApiBody,
@@ -19,10 +19,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Product } from './entities/product.entity';
-import { CreateProductDto } from './dtos/createProduct.dto';
-import { UpdateProductDto } from './dtos/updateProduct.dto';
-import { ProductQueryPaginationDto } from './dtos/productQueryPagination.dto';
+import { Product } from '../entities/product.entity';
+import { CreateProductDto } from '../dtos/createProduct.dto';
+import { UpdateProductDto } from '../dtos/updateProduct.dto';
+import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
 
 @ApiTags('products')
 @Controller('products')

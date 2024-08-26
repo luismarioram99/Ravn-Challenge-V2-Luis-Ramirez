@@ -1,5 +1,6 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Product {
@@ -30,4 +31,7 @@ export class Product {
   @Column({ nullable: true })
   @ApiResponseProperty({ type: 'number', example: 'www.example.com' })
   image: string;
+
+  @ManyToMany(() => User, (user) => user.likedProducts)
+  likers: User[];
 }

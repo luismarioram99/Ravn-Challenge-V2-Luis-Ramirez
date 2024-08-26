@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ProductRepository } from '../repositories/product.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from '../entities/product.entity';
-import { CreateProductDto } from '../dtos/createProduct.dto';
-import { UpdateProductDto } from '../dtos/updateProduct.dto';
 import { EntityNotFoundError } from 'typeorm';
+
+import { CreateProductDto } from '../dtos/createProduct.dto';
 import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
+import { UpdateProductDto } from '../dtos/updateProduct.dto';
+import { Product } from '../entities/product.entity';
+import { ProductRepository } from '../repositories/product.repository';
 
 /**
  * Constructs a new instance of the ProductsService class.
