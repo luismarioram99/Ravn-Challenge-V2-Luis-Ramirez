@@ -8,18 +8,64 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './services/products.service';
 import { EntityNotFoundError } from 'typeorm';
-import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dtos/createProduct.dto';
 import { UpdateProductDto } from './dtos/updateProduct.dto';
+import { ProductQueryPaginationDto } from './dtos/productQueryPagination.dto';
 
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private productService: ProductsService) {}
+
+  /**
+   * Retrieves a list of products based on the provided query parameters.
+   *
+   * @param {ProductQueryPaginationDto} query - The query parameters for pagination and filtering.
+   * @return {Promise<Product[]>} The list of products matching the query parameters.
+   */
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'offset',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'category',
+    type: String,
+    required: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The found products',
+    type: [Product],
+  })
+  @Get()
+  async getProducts(
+    @Query()
+    { limit = 10, offset = 0, category }: ProductQueryPaginationDto,
+  ) {
+    try {
+      return await this.productService.find({ limit, offset, category });
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
+  }
 
   /**
    * Retrieves a product by its id.

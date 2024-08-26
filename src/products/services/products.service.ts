@@ -5,6 +5,7 @@ import { Product } from '../entities/product.entity';
 import { CreateProductDto } from '../dtos/createProduct.dto';
 import { UpdateProductDto } from '../dtos/updateProduct.dto';
 import { EntityNotFoundError } from 'typeorm';
+import { ProductQueryPaginationDto } from '../dtos/productQueryPagination.dto';
 
 /**
  * Constructs a new instance of the ProductsService class.
@@ -17,6 +18,27 @@ export class ProductsService {
     @InjectRepository(Product)
     private productRepository: ProductRepository,
   ) {}
+
+  /**
+   * Retrieves a list of products based on the provided pagination and category parameters.
+   *
+   * @param {ProductQueryPaginationDto} - An object containing pagination and category details.
+   * @param {number} limit - The maximum number of products to return.
+   * @param {number} offset - The number of products to skip before starting to return products.
+   * @param {string} category - The category of products to return. If not provided, all products are returned.
+   * @return {Promise<Product[]>} A promise that resolves to an array of products matching the provided criteria.
+   */
+  async find({ limit, offset, category }: ProductQueryPaginationDto) {
+    if (!category) {
+      return this.productRepository.find({ take: limit, skip: offset });
+    }
+
+    return this.productRepository.find({
+      where: { category },
+      take: limit,
+      skip: offset,
+    });
+  }
 
   /**
    * Retrieves a product by its unique identifier.

@@ -32,6 +32,11 @@ export class CreateProductDto {
   @ApiProperty({ description: 'Product stock', example: '10' })
   stock: number;
 
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ description: 'Product category', example: 'Category 1' })
+  category: string;
+
   @IsOptional()
   @IsUrl()
   @ApiProperty({ description: 'Product image', example: 'http://example.com' })
