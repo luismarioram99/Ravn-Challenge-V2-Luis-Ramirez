@@ -35,11 +35,7 @@ export class Product {
   @ApiResponseProperty({ type: 'number' })
   stock: number;
 
-  @Column({ nullable: true })
-  @ApiResponseProperty({ type: 'number', example: 'www.example.com' })
-  image: string;
-
-  @OneToMany(() => Image, (image) => image.product)
+  @OneToMany(() => Image, (image) => image.product, { onDelete: 'CASCADE' })
   images: Image[];
 
   @ManyToMany(() => User, (user) => user.likedProducts)

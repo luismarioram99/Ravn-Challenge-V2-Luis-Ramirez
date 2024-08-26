@@ -32,14 +32,16 @@ export class ProductsService {
    * @return {Promise<Product[]>} A promise that resolves to an array of products matching the provided criteria.
    */
   async find({ limit, offset, category }: ProductQueryPaginationDto) {
-    if (!category) {
-      return this.productRepository.find({ take: limit, skip: offset });
+    let categoryFilter = {};
+    if (category) {
+      categoryFilter = { where: { category } };
     }
 
     return this.productRepository.find({
-      where: { category },
+      ...categoryFilter,
       take: limit,
       skip: offset,
+      relations: ['images'],
     });
   }
 
@@ -50,7 +52,10 @@ export class ProductsService {
    * @return {Promise<Product>} the product with the specified identifier
    */
   async findOne(id: string) {
-    return this.productRepository.findOneByOrFail({ id });
+    return this.productRepository.findOneOrFail({
+      where: { id },
+      relations: ['images'],
+    });
   }
 
   /**
