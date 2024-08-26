@@ -13,6 +13,12 @@ export class UsersService {
     private userRepository: UserRepository,
   ) {}
 
+  /**
+   * Creates a new user with the provided information and saves it to the database.
+   *
+   * @param {CreateUserDto} createUserDto - The data transfer object containing the user's information.
+   * @return {Promise<User>} The newly created user without the password field.
+   */
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { password } = createUserDto;
 
@@ -29,5 +35,19 @@ export class UsersService {
     delete user.password;
 
     return user;
+  }
+
+  /**
+   * Retrieves a user from the database based on the provided identifier.
+   *
+   * @param {string} identifier - The email or username of the user to find.
+   * @return {Promise<User>} The user entity if found, or undefined if not found.
+   */
+  async findUser(identifier: string): Promise<User> {
+    //identifier is either email or username
+
+    return this.userRepository.findOne({
+      where: [{ email: identifier }, { username: identifier }],
+    });
   }
 }
